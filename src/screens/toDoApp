@@ -1,0 +1,199 @@
+import React, { useState } from "react";
+import { SafeAreaView, View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput, Modal, FlatList } from "react-native";
+import Entypo from 'react-native-vector-icons/Entypo'
+import AntDesign from 'react-native-vector-icons/AntDesign'
+
+
+const toDoApp = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [tasks, setTasks] = useState([]);
+  const [tasktitle, setTaskTitle] = useState();
+  const [taskDescription, setTaskDescription] = useState();
+  const [id, setId] = useState();
+
+  const addTask = () => {
+    const newTask = {
+      title: tasktitle,
+      description: taskDescription,
+    }
+    setTasks([...tasks, newTask])
+    setTaskTitle('');
+    setTaskDescription('');
+  }
+
+  const editTask = (index) => {
+  const editValue = tasks[index];
+  console.log(editValue);
+  setId(index)
+ console.log(editValue.tasktitle);
+  setTaskTitle(editValue.title)
+  setTaskDescription(editValue.description)
+  }
+
+  const deleteTask = (index) => {
+    const updateTasks = [...tasks]
+    console.log(updateTasks);
+    updateTasks.splice(index, 1);
+    setTasks(updateTasks);
+  }
+  const updateTask = () => {
+    if( id !== undefined ) {
+      let updatedTasks = [...tasks];
+      updatedTasks[id] = {title: tasktitle, description: taskDescription};
+      setTasks(updatedTasks);
+      setTaskTitle('');
+      setTaskDescription('');
+    }
+  }
+  return (
+    <SafeAreaView style={[styles.container]}>
+      <View style={[styles.subContainer]}>
+        <Text style={[styles.title]}>Task List Manager</Text>
+        <View>
+          <View style={[styles.textInputContainer]}>
+            <TextInput placeholder="Title" value={tasktitle} onChangeText={text => setTaskTitle(text)} style={[styles.titleInput]} placeholderTextColor='#6d6875'></TextInput>
+            <View style={[styles.dividerLine]}></View>
+            <TextInput placeholder="Description" value={taskDescription} onChangeText={text => setTaskDescription(text)} style={[styles.descriptionInput]} placeholderTextColor='#6d6875'></TextInput>
+          </View>
+          <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+          <TouchableOpacity style={[styles.addButton]} onPress={updateTask}>
+            <Text style={[styles.addButtonText]}>Update</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.addButton]} onPress={addTask}>
+            <Text style={[styles.addButtonText]}>Add</Text>
+          </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={[styles.taskListContainer]}>
+          <Text style={[styles.taskListTitle]}>Task List</Text>
+          <FlatList data={tasks}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => (
+              <View style={[styles.singleTask]}>
+                <View style={{flexDirection: 'row',justifyContent: 'flex-end'}}>
+                  <TouchableOpacity onPress={() => editTask(index)}>
+                    <AntDesign name="edit" size={20} color='black' style={{ alignSelf: 'flex-end', marginHorizontal: 15 }} />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => deleteTask(index)}>
+                    <AntDesign name="delete" size={20} color='black' style={{ alignSelf: 'flex-end', marginHorizontal: 15 }} />
+                  </TouchableOpacity>
+                </View>
+                <View>
+                  <Text style={[styles.listTitle]}>{item.title}</Text>
+                </View>
+                <View>
+                  <Text style={[styles.listDescription]}>{item.description}</Text>
+                </View>
+                <View style={[styles.dividerLine]}></View>
+              </View>
+            )} />
+        </View>
+      </View>
+      <Modal animationType="slide" transparent={true} visible={modalVisible} >
+        <View style={[styles.modalBackground]}>
+          <TouchableOpacity style={[styles.modalBtn, { flexDirection: 'row', justifyContent: 'center' }]}>
+            {/* <AntDesign name='edit' size={30} color='#88AB8E' /> */}
+            <Text style={[styles.modalBtnText]}> Edit </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.modalBtn, { flexDirection: 'row', justifyContent: 'center' }]}>
+            {/* <AntDesign name='delete' size={30} color='#88AB8E' /> */}
+            <Text style={[styles.modalBtnText]}> Delete </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.modalBtn]}>
+            <Text style={[styles.modalBtnText]}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    </SafeAreaView>
+  )
+}
+
+export default toDoApp;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F2F1EB',
+  },
+  subContainer: {
+    marginHorizontal: 15,
+    marginTop: 15,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#88AB8E',
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+  textInputContainer: {
+    backgroundColor: '#EEE7DA',
+    // backgroundColor: '#AFC8AD',
+    padding: 5,
+    borderRadius: 10,
+    marginVertical: 5,
+  },
+  titleInput: {
+    fontSize: 22,
+    color: '#6d6875',
+  },
+  dividerLine: {
+    borderBottomWidth: 0.5,
+    borderColor: '#88AB8E'
+  },
+  descriptionInput: {
+    fontSize: 20,
+    color: '#6d6875',
+  },
+  addButton: {
+    backgroundColor: '#AFC8AD',
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    alignSelf: 'flex-end',
+    borderRadius: 5,
+    marginTop: 10
+  },
+  addButtonText: {
+    color: '#6d6875',
+    fontSize: 18,
+  },
+  taskListContainer: {
+
+  },
+  taskListTitle: {
+    fontSize: 25,
+    color: '#88AB8E',
+    fontWeight: '500',
+    marginTop: 20,
+  },
+  singleTask: {
+    margin: 10,
+  },
+  listTitle: {
+    fontSize: 18,
+  },
+  listDescription: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingBottom: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+  },
+  modalBtn: {
+    backgroundColor: '#AFC8AD',
+    width: '80%',
+    marginVertical: 10,
+    padding: 10,
+    borderRadius: 15,
+    alignItems: 'center'
+  },
+  modalBtnText: {
+    fontSize: 20,
+    fontWeight: '800',
+  }
+})
